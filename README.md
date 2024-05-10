@@ -3,10 +3,9 @@ THE WHOLE DRIVE IS ENCRYPTED!!!
 Most (ALL i know of) Full Disk Encryption setups miss the _Full Disk Encryption_ point by not encrypting a tiny (often grub) +-1Mb partition.
 By doing so you are merely fixing the problem of partial encryption but just transforming it.
 
-Impel Down Encryption is a real **Full Disk Encryption** by ACTUALLY not leaving ANY partition unencrypted on the drive.
+Impel Down Encryption is real **Full Disk Encryption** by ACTUALLY not leaving ANY partition unencrypted on the drive.
 
-Moreover the /boot partition is locked after booting to prevent Evil Maid attacks.
-This means when shutdown an external attacker cant inject any keyloggers (or similar) into your unencrypted partitions (because there literally are non). Additionally when booted into the system the kernel on the boot partition can not be touched by internal attacks because the boot partition is unmounted and in an encrypted state.
+Moreover the architecture protects against Evil Maid attacks, when shutdown an external attacker can't inject any keyloggers (or similar) into your unencrypted partitions (because there literally are non). Additionally when booted into the system the kernel on the boot partition can not be touched by internal attacks because the boot partition is unmounted and in an encrypted state.
 ## How it works
 
 
