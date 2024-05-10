@@ -37,8 +37,8 @@ dd bs=512 count=4 if=/dev/urandom of=./notnothing iflag=fullblock
 
 # Setting up partitions
 #root
-cryptsetup -y -v luksFormat $root_partition /etc/notnothing
-cryptsetup open $root_partition root --key-file /etc/notnothing
+cryptsetup -y -v luksFormat $root_partition ./notnothing
+cryptsetup open $root_partition root --key-file ./notnothing
 mkfs.ext4 /dev/mapper/root
 
 #swap
