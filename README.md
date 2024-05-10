@@ -12,11 +12,11 @@ This means when shutdown an external attacker cant inject any keyloggers (or sim
 
 
 ## Prerequisites
-1. Impel Down Encryption ONLY works if you have GRUB (or similar) on your BIOS chip. _Libreboot is recommended (check if your device is compatible)._
+1. Impel Down Encryption ONLY works if you have GRUB (or similar) on your BIOS chip. _Libreboot is recommended. (check if your device is compatible)_
 2. Thats it, now you are good to go.
 
 ## Setup / Installation
-(to be added)
+(to be added)\n
 You can read through the ```installer.sh``` as it is well documented with comments for now.
 
 ## Yubikey Support
