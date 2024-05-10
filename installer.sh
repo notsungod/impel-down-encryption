@@ -33,12 +33,12 @@ read -p "Enter encrypted root partition (e.g. /dev/sda3): " root_partition
 # timedatectl
 
 # create key-file
-dd bs=512 count=4 if=/dev/urandom of=/etc/notnothing iflag=fullblock
+dd bs=512 count=4 if=/dev/urandom of=./notnothing iflag=fullblock
 
 # Setting up partitions
 #root
 cryptsetup -y -v luksFormat $root_partition /etc/notnothing
-cryptsetup open $root_partition root /etc/notnothing
+cryptsetup open $root_partition root --key-file /etc/notnothing
 mkfs.ext4 /dev/mapper/root
 
 #swap
@@ -47,7 +47,15 @@ mkfs.ext2 -L cryptswap $swap_partition 1M
 #boot
 echo ""
 echo "---------------------------------------"
+echo "---------------------------------------"
+echo "---------------------------------------"
+echo "---------------------------------------"
+echo "---------------------------------------"
 echo "NOW CREATE PASSPHRASE WITH YOUR YUBIKEY"
+echo "---------------------------------------"
+echo "---------------------------------------"
+echo "---------------------------------------"
+echo "---------------------------------------"
 echo "---------------------------------------"
 echo ""
 cryptsetup -y -v luksFormat $efistub_partition
@@ -57,6 +65,10 @@ mkfs.fat -F 32 /dev/mapper/boot
 #mount
 mount /dev/mapper/root /mnt
 mount --mkdir /dev/mapper/boot /mnt/boot
+
+# move key-file to chroot
+mkdir /mnt/etc
+mv ./notnothing /mnt/etc/
 
 #gen root
 pacman-key --init
