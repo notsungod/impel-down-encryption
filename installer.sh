@@ -4,6 +4,7 @@
 
 # Ask the user if they want to continue
 echo "You need to connect to the internet before starting this script! Run nmtui for interactive menu & You need to setup 3 partitions. One fat32 <>; one swap partition and one root partition ext4."
+echo "If you want to use a yubikey, have it ready with static password (more information in README)."
 echo -n "Do you want to continue? (Y/n) "
 read answer
 if [[ "$answer" == "y" ]] || [[ -z "$answer" ]]; then
@@ -26,21 +27,29 @@ fi
 
 # Define partitions
 lsblk
-read -p "Enter EFISTUB boot partition (e.g., /dev/sda1): " efistub_partition
-read -p "Enter encrypted swap partition (e.g., /dev/sda2): " swap_partition
-read -p "Enter encrypted root partition (e.g., /dev/sda3): " root_partition
+read -p "Enter boot partition (e.g. /dev/sda1): " efistub_partition
+read -p "Enter encrypted swap partition (e.g. /dev/sda2): " swap_partition
+read -p "Enter encrypted root partition (e.g. /dev/sda3): " root_partition
 # timedatectl
+
+# create key-file
+dd bs=512 count=4 if=/dev/urandom of=/etc/notnothing iflag=fullblock
 
 # Setting up partitions
 #root
-cryptsetup -y -v luksFormat $root_partition
-cryptsetup open $root_partition root
+cryptsetup -y -v luksFormat $root_partition /etc/notnothing
+cryptsetup open $root_partition root /etc/notnothing
 mkfs.ext4 /dev/mapper/root
 
 #swap
 mkfs.ext2 -L cryptswap $swap_partition 1M
 
 #boot
+echo ""
+echo "---------------------------------------"
+echo "NOW CREATE PASSPHRASE WITH YOUR YUBIKEY"
+echo "---------------------------------------"
+echo ""
 cryptsetup -y -v luksFormat $efistub_partition
 cryptsetup open $efistub_partition boot
 mkfs.fat -F 32 /dev/mapper/boot
@@ -55,10 +64,7 @@ pacman-key --populate archlinux
 pacstrap -K /mnt base linux-hardened linux-firmware
 echo "swap         UUID=$(blkid -s UUID -o value $swap_partition)     /dev/urandom            swap,offset=2048,cipher=aes-xts-plain64,size=512" >> /mnt/etc/crypttab
 echo "/dev/mapper/swap  none   swap    defaults   0       0" >> /mnt/etc/fstab
-echo "cryptdevice=UUID=$(blkid -s UUID -o value $root_partition):recrypt root=/dev/mapper/recrypt resume=/dev/mapper/swap rw loglevel=0 quiet lsm=landlock,lockdown,yama,integrity,apparmor,bpf lockdown=integrity slab_nomerge init_on_alloc=1 init_on_free=1 mce=0  mds=full,nosmt module.sig_enforce=1 oops=panic mitigations=auto,nosmt audit=1 intel_iommu=on page_alloc.shuffle=1 pti=on randomize_kstack_offset=on vsyscall=none debugfs=off ipv6.disable=1">/mnt/etc/kernel/cmdline
 echo "proc /proc proc nosuid,nodev,noexec,hidepid=2,gid=proc 0 0">>/mnt/etc/fstab
-echo "/dev/mapper/recrypt     /               ext4            rw,relatime     0 1">>/mnt/etc/fstab
-echo "PARTUUID=$(blkid -s PARTUUID -o value /dev/mapper/boot)           /efi            vfat            rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro     0 2">>/mnt/etc/fstab
 
 #chroot
 arch-chroot /mnt /bin/bash -c "
@@ -71,9 +77,10 @@ locale-gen
 echo \"LANG=en_US.UTF-8\">>/etc/locale.conf
 echo \"KEYMAP=de-latin1\">>/etc/vconsole.conf
 echo \"host\">>/etc/hostname
-pacman -S --noconfirm lvm2
-sed -i 's/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/g' \"/etc/mkinitcpio.conf\"
+sed -i 's/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)/g' \"/etc/mkinitcpio.conf\"
+sed -i 's/FILES=()/FILES="/etc/notnothing"/g' \"/etc/mkinitcpio.conf\"
 mkinitcpio -P
+chmod 000 /etc/notnothing
 echo \"umask 0077\">>/etc/profile
 echo \"Enter ROOT password: \"
 passwd
