@@ -90,7 +90,7 @@ echo \"LANG=en_US.UTF-8\">>/etc/locale.conf
 echo \"KEYMAP=de-latin1\">>/etc/vconsole.conf
 echo \"host\">>/etc/hostname
 sed -i 's/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)/g' \"/etc/mkinitcpio.conf\"
-sed -i 's/FILES=()/FILES="/etc/notnothing"/g' \"/etc/mkinitcpio.conf\"
+sed -i 's/FILES=()/FILES=\"\/etc\/notnothing\"/g' \"/etc/mkinitcpio.conf\"
 mkinitcpio -P
 chmod 000 /etc/notnothing
 echo \"umask 0077\">>/etc/profile
