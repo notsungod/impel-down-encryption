@@ -16,7 +16,8 @@ This means when shutdown an external attacker cant inject any keyloggers (or sim
 2. Thats it, now you are good to go.
 
 ## Setup / Installation
-(to be added)\n
+(to be added)
+
 You can read through the ```installer.sh``` as it is well documented with comments for now.
 
 ## Yubikey Support
