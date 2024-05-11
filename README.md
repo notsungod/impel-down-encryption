@@ -19,6 +19,15 @@ Moreover the architecture protects against Evil Maid attacks, when shutdown an e
 
 You can read through the ```installer.sh``` as it is well documented with comments for now.
 
+After running the script you need to update the grub.cfg of Libreboot and (on my particular setup, find yours using grub shell)
+
+Inside the 'Load Operating System' menu entry, change the contents to something like this:
+```
+cryptomount (ahci0,gpt1)
+linux (crypto0)/vmlinuz-linux-hardened root=/dev/mapper/root cryptdevice=/dev/sda3:root cryptkey=rootfs:/etc/notnothing rw quiet
+initrd (crypto0)/initramfs-linux-hardened.img
+```
+
 ## Yubikey Support
 If you have a Yubikey you can set it up to create a 2FA password.
 
