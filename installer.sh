@@ -92,6 +92,7 @@ echo \"host\">>/etc/hostname
 sed -i 's/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)/g' \"/etc/mkinitcpio.conf\"
 sed -i 's/FILES=()/FILES=\"\/etc\/notnothing\"/g' \"/etc/mkinitcpio.conf\"
 mkinitcpio -P
+pacman -S networkmanager
 chmod 000 /etc/notnothing
 echo \"umask 0077\">>/etc/profile
 echo \"Enter ROOT password: \"
