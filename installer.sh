@@ -97,6 +97,13 @@ chmod 000 /etc/notnothing
 echo \"umask 0077\">>/etc/profile
 echo \"Enter ROOT password: \"
 passwd
+echo \"Enter password for new user (user): \"
+passwd user
+echo '%wheel ALL=(ALL:ALL) ALL' | EDITOR='tee -a' visudo
+echo 'Defaults lecture=never' | EDITOR='tee -a' visudo
+echo '[main]'>>/etc/NetworkManager/NetworkManager.conf
+echo 'plugins=keyfile'>>/etc/NetworkManager/NetworkManager.conf
+echo 'persistent=true'>>/etc/NetworkManager/NetworkManager.conf
 "
 # Finish
 echo "Setup completed successfully! You can REBOOT now."
